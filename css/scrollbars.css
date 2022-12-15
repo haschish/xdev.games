@@ -1,0 +1,45 @@
+::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  ::-webkit-scrollbar-button {
+    width: 0px;
+    height: 0px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #ed1c46;
+    border: 0px none #ffffff;
+    /* border-radius: 5px; */
+  }
+  /* ::-webkit-scrollbar-thumb:hover {
+    background: #ed1c46;
+    outline: #ed1c4630 4px solid;
+  } */
+  ::-webkit-scrollbar-thumb:active {
+    background: #ed1c46;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0b121f;
+    border: 0px none #ffffff;
+    /* border-radius: 5px; */
+  }
+  /* ::-webkit-scrollbar-track:hover {
+    background: #0b121f70;
+  } */
+  ::-webkit-scrollbar-track:active {
+    background: #0b121f;
+  }
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+.noscrollbar::-webkit-scrollbar{
+    display: none;
+}
+
+#otherPageContoller main::-webkit-scrollbar-track {
+  margin-top: 1.5vh!important;
+}
+.content::-webkit-scrollbar-track {
+  margin-bottom: 2vh!important;
+  margin-top: calc(var(--gridplussize) / 2);
+}

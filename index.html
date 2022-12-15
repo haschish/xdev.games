@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>XDevs LTD: Game development</title>
+    <link rel="icon" href="/favicon.ico?bPph41bNOKjAVJK0" sizes="any">
+    <link rel="icon" href="/favicon.svg?bPph41bNOKjAVJK0" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png?bPph41bNOKjAVJK0">
+    <link rel="manifest" href="manifest.json?bPph41bNOKjAVJK0">
+
+    <link rel="stylesheet" href="css/scrollbars.css?bPph41bNOKjAVJK0">
+    <link rel="stylesheet" href="css/main.css?bPph41bNOKjAVJK0">
+    <meta name="referrer" content="origin">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="XDevs LTD">
+    <meta name="description" content="XDevs LTD: Game development">
+    <link href="css/tailwind.min.css" rel="stylesheet">
+    <script rel="prefetch" src="js/alpine.min.js" type="text/javascript"></script>
+    <script rel="prefetch" src="js/main.js?bPph41bNOKjAVJK0"></script>
+</head>
+
+<body class="noscrollbar w-full h-full" x-data="mainController()" @showpage.window="showPage($event.detail)" @dropdownhidden.window="dropdownHidden = true;" @showgame.window="showGame($event.detail)" @hashchange.window="$dispatch('changehash'); update($dispatch);"
+    x-ref="body">
+    <nav class="flex items-center justify-between flex-wrap bg-gray-800 p-6 w-full z-10 top-0" id="main-navbar">
+        <div class="brand-wraper flex items-center text-white mr-6">
+            <img src="/icon-192.png" alt="" class="" style="width: 0; height: 0;" />
+            <a class="navbar-brand" href="#"><img src="img/xdev_logo.png" /></a>
+            <div class="z-10 scale-150 md:p-10 flex lg:hidden block">
+                <button @click="toggleNavbar()" id="nav-toggle" class="flex items-center px-6 py-2 border rounded text-gray-500 border-gray-600 hover:text-white hover:border-white">
+                    <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+                </button>
+            </div>
+        </div>
+        <div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden lg:block lg:pt-0" x-bind:class="{'hidden': navbarHidden}" id="navbarCollapse">
+            <ul class="list-reset lg:flex justify-end flex-1 items-center">
+                <li class="nav-item self-stretch" x-bind:class="{'active': isPage('game')}">
+                    <a class="nav-link" x-bind:href="'#' + games[0].id">Games</a>
+                </li>
+                <li class="nav-item self-stretch" x-bind:class="{'active': isPage('contacts')}" x-on:click="window.scroll(0,0)">
+                    <a class="nav-link" href="#" x-on:click.prevent="window.location.hash = 'contacts'">Contacts</a>
+                </li>
+                <li class="nav-item self-stretch invisible hidden xs-none">
+                    <a class="nav-link" href="#">Vacancies</a>
+                </li>
+                <li class="nav-item self-stretch invisible hidden xs-none">
+                    <a class="nav-link" href="#">About Us</a>
+                </li>
+            </ul>
+        </div>
+        <div class="flex-grow lg:flex lg:items-center lg:w-auto hidden lg:block pt-6 lg:pt-0 justify-end nav-lang">
+            <ul class="navbar-nav justify-end flex">
+                <li class="nav-item invisible">
+                    <a class="nav-link" href="#"><img src="img/flag_ru.jpg" /></a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="#"><img src="img/flag_en.jpg" /><span class="sr-only">(current)</span></a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <nav class="navbar" id="dropdown-navbar" @changehash.window="updateCurrent()" x-data="dropdown(gamemenucards)" x-init="init()" x-show="menuIsVisible" x-cloak>
+        <div class="justify-content-center order-0 offset-0 w-full items-container" x-on:resize.window="setVisibleSlides()">
+            <div class="menu-control left" @click="prev()" x-show="controlIsAvailable()"></div>
+            <div class="menu-control right" @click="next()" x-show="controlIsAvailable()"></div>
+            <ul class="navbar-nav mr-auto flex">
+                <template x-for="slideIndex in visibleSlides">
+                        <li class="nav-item" :class="{'active': getGame(slideIndex).isCurrent}"
+                            x-show="getGame(slideIndex).isVisible">
+                            <a class="nav-link" href="#" x-on:click.prevent="setCurrent($dispatch, slideIndex);">
+                                <img :src="getGame(slideIndex).logosrc">
+                                <span x-text="getGame(slideIndex).title"></span>
+                                <span class="sr-only" x-text="getGame(slideIndex).isCurrent? '(current)' : ''"></span></a>
+                        </li>
+                </template>
+            </ul>
+        </div>
+    </nav>
+    <div class="w-100" x-show="isPage('main')" id="mainContainer" x-cloak>
+        <div class="items-center justify-center" x-data="slider(slides)" x-init="setup()" id="slider-wrapper">
+            <section :aria-labelledby="title.toLowerCase().replace(' ', '-')" class="flex flex-col items-center justify-center w-full slide-container" @keydown.arrow-right="state.usedKeyboard = true;updateCurrent(nextSlide)" @keydown.arrow-left="state.usedKeyboard = true;updateCurrent(previousSlide)"
+                @keydown.window.tab="state.usedKeyboard = true" x-title="Our highlighted projects">
+                <div :id="title.toLowerCase().replace(' ', '-')" class="sr-only" x-text="title">
+                </div>
+                <div tabindex="1" class="relative w-full overflow-hidden" :class="{'focus:outline-none' : !state.usedKeyboard}" id="slide-container">
+                    <div class="slide-control left" @click="stopAutoplay();prev()"></div>
+                    <div class="slide-control right" @click="stopAutoplay();next()"></div>
+                    <template x-for="(slide, index) in slides" :key="slide.id">
+                        <div :aria-hidden="(state.order[state.currentSlide] != slide.id).toString()" class="slide" >
+                          <div
+                              x-show="state.order[state.currentSlide] == slide.id"
+                              class="w-full text-center flex flex-col items-center justify-center"
+                              :x-ref="slide.id"
+                              :x-transition:enter="transitions('enter')"
+                              :x-transition:enter-start="transitions('enter-start')"
+                              :x-transition:enter-end="transitions('enter-end')"
+                              :x-transition:leave="transitions('leave')"
+                              :x-transition:leave-start="transitions('leave-start')"
+                              :x-transition:leave-end="transitions('leave-end')"
+                              >
+                                <img :src="slide.src">
+                                <div class="slide-caption mb-8" x-cloak>
+                                    <div class="gamelogo"><img :src="slide.logo"></div>
+                                    <button class="playnow" type="button" @click="$dispatch('showgame', slide.title)">PLAY NOW</button>
+                                </div>
+                            </div>
+                          </div>
+                    </template>
+                    <div class="slide-control bottom">
+                        <div aria-live="polite" aria-atomic="true" class="sr-only" x-text="'Slide ' + (state.currentSlide + 1) + ' of ' + slides.length">
+                        </div>
+                        <div>
+                            <template x-for="(slide, index) in Array.from({ length: slides.length })" :key="index">
+                            <button
+                                class=" text-white inline-flex items-center justify-center w-4 h-4 p-0 mb-2 rounded-full"
+                                style="text-indent:-9999px"
+                                :class="{
+                                    'active' : state.currentSlide == index,
+                                    'focus:outline-none' : !state.usedKeyboard,
+                                }"
+                                @click="stopAutoplay();updateCurrent(index)"
+                                x-text="index + 1">
+                            </button>
+                        </template>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <main role="main" x-data="gameCardsController(cardsItems)" x-init="init()" class="noscrollbar">
+            <div class="cards-container">
+                <template x-for="(card, index) in gameCards" :key="index">
+                    <div class="gamecard" x-bind:class="{'hide-logo': !card.logo}" @click="$dispatch('showgame', card.title)">
+                        <div class="front flex">
+                            <div class="grid-plus top-left"></div>
+                            <div class="grid-plus top-center"></div>
+                            <div class="grid-plus top-right"></div>
+                            <div class="grid-plus left-middle"></div>
+                            <div class="grid-plus right-middle"></div>
+                            <div class="grid-plus bottom-left"></div>
+                            <div class="grid-plus bottom-center"></div>
+                            <div class="grid-plus bottom-right"></div>
+                            <img x-bind:src="card.src" alt="">
+                        </div>
+                        <div class="back" x-show="card.logo">
+                            <div class="card-back-logo">
+                                <div class="left"></div>
+                                <img :src="card.logo" x-bind:alt="card.title">
+                                <div class="right"></div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+            <div class="scroll_up" @click="window.scroll(0, 0);"></div>
+        </main>
+    </div>
+    <template x-if="isPage('game')">
+        <div class="w-100"  id="gameContainer" x-cloak>
+            <div x-data="gameController()" class="w-100" @changehash.window="init()" x-init="init()">
+                <header id="gameHeader">
+                    <img class="poster w-full h-full" x-bind:src="game.header">
+                    <div class="description">
+                        <div class="grid-plus top-left"></div>
+                        <div class="grid-plus top-right"></div>
+                        <div class="grid-plus bottom-left"></div>
+                        <div class="grid-plus bottom-right"></div>
+                        <div class="title" x-text="game.title"></div>
+                        <div class="text"><div x-text="game.description"></div></div>
+                    </div>
+                    <div class="markets">
+                        <template x-for="market in game.markets" x-if="isActive && game && game.markets">
+                            <div class="market">
+                                <a x-bind:href="market.link" target="_blank">
+                                    <span class="market_text" x-text="market.text"></span>
+                                    <img x-bind:src="market.logo">
+                                </a>
+                            </div>
+                        </template>
+    </div>
+    </header>
+
+    <main id="gameMain" class="noscrollbar" role="main" x-cloack>
+        <div class="cards-container flex">
+            <template x-for="(card, index) in game.cards" :key="index" x-if="isActive && game && game.cards && game.cards.length">
+                <div class="gamecard flex" x-bind:class="{'hide-logo': !card.logo}" x-bind:title="card && card.text">
+                    <div class="front flex">
+                        <div class="grid-plus top-left"></div>
+                        <div class="grid-plus top-center"></div>
+                        <div class="grid-plus top-right"></div>
+                        <div class="grid-plus left-middle"></div>
+                        <div class="grid-plus right-middle"></div>
+                        <div class="grid-plus bottom-left"></div>
+                        <div class="grid-plus bottom-center"></div>
+                        <div class="grid-plus bottom-right"></div>
+                        <img :src="card.src" alt="card.text" x-show="card.src">
+                        <div class="description" x-show="card.highlitedText || card.unhighlitedText">
+                            <span class="highlited" x-text="card.highlitedText"></span>
+                            <span x-text="card.unhighlitedText"></span>
+                        </div>
+                        <div class="flex" x-show="card.video" >
+                            <div x-bind:class="{'videostopoverlay': !card.play}" x-on:click.self="$refs['video'+index].play();">
+                                <div class="videoplay" x-show="!card.play" x-on:click.self="$refs['video'+index].play()"></div>
+                            </div>
+                            <video x-ref="video"  :x-ref="'video'+index"
+                                class="video flex flex-1"
+                                x-bind:class="{'stop': !card.play}"
+                                x-bind:src="card.video" x-bind:poster="card.poster"
+                                controls
+                                preload="metadata"
+                                @play="playToggle(card, 'play')"
+                                @pause="playToggle(card, 'pause')">
+                            </video>
+
+
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+        <div class="scroll_up" @click="window.scroll(0, 0);"></div>
+    </main>
+    </div>
+    </div>
+    </template>
+    <template x-if="isPage('page')">
+        <div class="w-100"  id="otherPageContoller" x-cloak>
+            <div x-data="otherPageContoller()" class="w-100" @changehash.window="init()" x-init="init()">
+                <main>
+                    <div x-show="isLoading" class="loading fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-50 overflow-hidden bg-gray-700 opacity-75 flex flex-col items-center justify-center">
+                        <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"></div>
+                        <h2 class="text-center text-white text-xl font-semibold">Loading...</h2>
+                        <p class="w-1/3 text-center text-white">This may take a few moments, please don't close this page.</p>
+                    </div>
+                    <div class="content" x-html="html"></div>
+                </main>
+            </div>
+        </div>
+    </template>
+    <footer class="flex flex-row flex-wrap md:flex-nowrap">
+        <div class="flex flex-col flex-wrap" id="footer_col_1">
+            <div id="footerlogo">
+                <img src="img/xdev_logo.png">
+            </div>
+            <div id="footermenu" x-data="footerMenu()">
+                <ul>
+                    <template x-for="item in items">
+                        <li>
+                            <a x-bind:href="'#'+item.id" x-on:click.prevent="go($dispatch, item.id)" x-text="item.label"></a>
+                        </li>
+                    </template>
+                </ul>
+            </div>
+            <div id="footercopy">
+                <span class="copy">&copy;</span>&nbsp;2022 XDEVS LTD
+            </div>
+        </div>
+        <div class="flex flex-row items-end md:pl-12 lg:pl-64 flex-wrap" id="contacts" x-show="window.location.hash != '#contacts'">
+            <div class="flex flex-col flex-wrap sm:pr-8 justify-around">
+                <h4>Contacts</h4>
+                <p>XDEVS LTD</p>
+                <p>Misiaouli &amp; Kavazoglou 41, 2nd Floor</p>
+                <p>Office 203-B4, 3016</p>
+                <p>Limassol, Cyprus</p>
+                <p><a href="mailto:info@xdevs.ltd">info@xdevs.ltd</a></p>
+            </div>
+            <div class="flex flex-col">
+                <p>Support&nbsp;<a href="mailto:support@xdevs.ltd">support@xdevs.ltd</a></p>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>
